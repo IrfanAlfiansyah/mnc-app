@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,27 +19,53 @@ model user {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   cart      cart[]
+  orders    order[]
 }
 
 model product {
-  product_id   Int      @id @default(autoincrement())
+  product_id   Int         @id @default(autoincrement())
   product_name String
   price        Float
-  stok         Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  stok         Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
   cart         cart[]
+  orderItems   orderItem[]
 }
 
 model cart {
-  cart_id      Int      @id @default(autoincrement())
-  user_id      Int
-  product_id   Int
-  quantity     Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation(fields: [user_id], references: [user_id])
-  product      Product  @relation(fields: [product_id], references: [product_id])
+  cart_id    Int      @id @default(autoincrement())
+  user_id    Int
+  product_id Int
+  quantity   Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       user     @relation(fields: [user_id], references: [user_id])
+  product    product  @relation(fields: [product_id], references: [product_id])
 
   @@unique([user_id, product_id], name: "user_id_product_id")
+}
+
+model order {
+  order_id             Int         @id @default(autoincrement())
+  user_id              Int
+  total_amount         Float
+  status               String      @default("pending") // pending, success, failed, challenge
+  shipping_address     String?
+  payment_token        String?
+  payment_redirect_url String?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  user                 user        @relation(fields: [user_id], references: [user_id])
+  items                orderItem[]
+}
+
+model orderItem {
+  order_item_id Int     @id @default(autoincrement())
+  order_id      Int
+  product_id    Int
+  quantity      Int
+  price         Float
+  order         order   @relation(fields: [order_id], references: [order_id])
+  product       product @relation(fields: [product_id], references: [product_id])
 }

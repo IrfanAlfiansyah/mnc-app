@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { signUp, signIn } from '../controllers/auth.controller';
 import { createProduct, deleteProduct, getAllProducts, getProductById, updateProduct, updateProductStock } from '../controllers/product.controller';
 import { addToCart, getCartItems, removeFromCart, updateCartItem } from '../controllers/cart.controller';
+import { checkout, checkPaymentStatus, handlePaymentNotification } from '../controllers/order.controller';
 
 const router = Router();
 
@@ -15,8 +16,11 @@ router.put('/productId', updateProduct)
 router.put('/productId', updateProductStock)
 router.delete('/productId', deleteProduct)
 router.post('/cart', addToCart)
-router.get('/cart/:userId', getCartItems)
+router.post('/cart-items', getCartItems)
 router.put('/cartId', updateCartItem)
 router.delete('/:cartId', removeFromCart)
+router.post('/checkout', checkout);
+router.post('/payment-notification', handlePaymentNotification);
+router.get('/check-payment/:order_id', checkPaymentStatus);
 
 export default router;
